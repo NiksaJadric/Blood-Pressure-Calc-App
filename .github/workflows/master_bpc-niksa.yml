@@ -25,6 +25,12 @@ jobs:
       - name: Build with dotnet
         run: dotnet build --configuration Release
 
+      - name: Run unit tests
+        run: dotnet test BPCalculatorUnitTest\BPCalculatorUnitTest.csproj --collect "Code Coverage"
+
+      - name: Run acceptance tests
+        run: dotnet test BPCalculatorAcceptanceTest\BPCalculatorAcceptanceTest.csproj --collect "Code Coverage"
+
       - name: dotnet publish
         run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
