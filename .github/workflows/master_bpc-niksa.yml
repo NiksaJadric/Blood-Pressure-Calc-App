@@ -42,7 +42,7 @@ jobs:
   #    - uses: actions/upload-artifact@v3
   #      with:
   #       name: my-artifact
-  #       path: path/to/artifact/world.txt
+  #       path: path/to/artifact/world.txt 
 
       - name: dotnet publish
         run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
