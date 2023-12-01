@@ -22,14 +22,41 @@ jobs:
           dotnet-version: '6.0.x'
           include-prerelease: true
 
-      - name: Build with dotnet
-        run: dotnet build --configuration Release
+
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v3
+        with:
+            path: ~\sonar\cache
+            key: ${{ runner.os }}-sonar
+            restore-keys: ${{ runner.os }}-sonar
+      - name: Cache SonarCloud scanner
+        id: cache-sonar-scanner
+        uses: actions/cache@v3
+        with:
+            path: .\.sonar\scanner
+            key: ${{ runner.os }}-sonar-scanner
+            restore-keys: ${{ runner.os }}-sonar-scanner
+      - name: Install SonarCloud scanner
+        if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
+        shell: powershell
+        run: |
+            New-Item -Path .\.sonar\scanner -ItemType Directory
+            dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
+      - name: Analyze
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        shell: powershell
+        run: |
+            .\.sonar\scanner\dotnet-sonarscanner begin /k:"NiksaJadric_Blood-Pressure-Calc-App" /o:"niksajadric" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
+              - name: Build with dotnet
+                run: dotnet build --configuration Release
+            .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+
+
 
       - name: Run unit tests
-        run: dotnet test BPCalculatorUnitTest\BPCalculatorUnitTest.csproj --collect "Code Coverage"
-
-      - name: Run acceptance tests
-        run: dotnet test BPCalculatorAcceptanceTest\BPCalculatorAcceptanceTest.csproj --collect "Code Coverage" -l:trx
+        run: dotnet test BPCalculatorUnitTest\BPCalculatorUnitTest.csproj --collect "Code Coverage" -l:trx
 
       - name: Publish unit test results
         uses: dorny/test-reporter@v1
@@ -43,6 +70,17 @@ jobs:
   #      with:
   #       name: my-artifact
   #       path: path/to/artifact/world.txt 
+
+
+      - name: Run acceptance tests
+        run: dotnet test BPCalculatorAcceptanceTest\BPCalculatorAcceptanceTest.csproj --collect "Code Coverage"
+
+
+
+
+
+
+
 
       - name: dotnet publish
         run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
