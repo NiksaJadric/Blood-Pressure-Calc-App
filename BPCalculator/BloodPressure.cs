@@ -43,6 +43,7 @@ namespace BPCalculator
                 else if (((Systolic >= 70 && Systolic <= 190) && (Diastolic >= 40 && Diastolic <= 100)) && !((Systolic >= 70 && Systolic < 140) && (Diastolic >= 40 && Diastolic < 90)))
                             { return BPCategory.High; }
                 else        { return BPCategory.None; }
+                // else { throw new Exception("Invalid value")
 
                 
             }

@@ -9,6 +9,11 @@ on:
       - master
   workflow_dispatch:
 
+env:
+  app-name: "BPC-Niksa"
+  rg-name: "CSD-CA1"  
+
+
 jobs:
   build:
     runs-on: windows-latest
@@ -92,6 +97,29 @@ jobs:
           name: .net-app
           path: ${{env.DOTNET_ROOT}}/myapp
 
+  deploy_staging:
+    runs-on: windows-latest
+    needs: build
+    environment:
+      name: 'Staging'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+
+    steps:
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v3
+        with:
+          name: .net-app
+
+      - name: Deploy to Azure Web App Staging
+        id: deploy-to-webapp-staging
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.app-name }}
+          slot-name: 'Staging'
+          publish-profile: ${{ secrets.AZURE_WEBAPP_STAGING_PP }}
+          package: .
+
+
   deploy:
     runs-on: windows-latest
     needs: build
@@ -109,7 +137,7 @@ jobs:
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'BPC-Niksa'
+          app-name: ${{ env.app-name }}
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_33BA270F1FC44BEF99E61565C31E8E5C }}
           package: .

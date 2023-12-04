@@ -33,5 +33,6 @@ namespace BPCalculatorUnitTest
             BloodPressure bp = new BloodPressure() { Systolic = 170, Diastolic = 95 };
             Assert.AreEqual(bp.Category, BPCategory.High);
         }
+        
     }
 }
