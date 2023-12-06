@@ -81,13 +81,6 @@ jobs:
       - name: Run acceptance tests
         run: dotnet test BPCalculatorAcceptanceTest\BPCalculatorAcceptanceTest.csproj --collect "Code Coverage"
 
-
-
-
-
-
-
-
       - name: dotnet publish
         run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
@@ -119,25 +112,46 @@ jobs:
           publish-profile: ${{ secrets.AZURE_WEBAPP_STAGING_PP }}
           package: .
 
+      # Run Selenium tests
+      - name: Run Selenium tests
+        run: dotnet test ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/myapp/SeleniumTest.dll /Settings:SeleniumTest.runsettings --logger:"trx;LogFileName=selenium.trx"
+  
+      # Upload results of selenium tests
+#      - uses: actions/upload-artifact@v3
+#        with:
+#         name: Selenium Tests Results
+#         path: TestResults/selenium.trx
 
-  deploy:
-    runs-on: windows-latest
-    needs: build
-    environment:
-      name: 'Production'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-
-    steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v3
+# SWAP SLOTS
+    # login to Azure account
+      - uses: azure/login@v1
         with:
-          name: .net-app
+         creds: ${{ secrets.AZURE_CREDENTIALS }}                         # JSON objects which represents service principal
 
-      - name: Deploy to Azure Web App
-        id: deploy-to-webapp
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: ${{ env.app-name }}
-          slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_33BA270F1FC44BEF99E61565C31E8E5C }}
-          package: .
+    # blue/green
+      - name: swap staging and production slots
+        run: |
+         az webapp deployment slot swap -n ${{ env.app-name }} -g ${{ env.rg-name }} --slot staging --target-slot production 
+
+
+#  deploy:
+#    runs-on: windows-latest
+#    needs: deploy_staging
+#    environment:
+#      name: 'Production'
+#      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+
+#    steps:
+#      - name: Download artifact from build job
+#        uses: actions/download-artifact@v3
+#        with:
+#          name: .net-app
+
+#      - name: Deploy to Azure Web App
+#        id: deploy-to-webapp
+#        uses: azure/webapps-deploy@v2
+#        with:
+#          app-name: ${{ env.app-name }}
+#          slot-name: 'Production'
+#          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_33BA270F1FC44BEF99E61565C31E8E5C }}
+#          package: .
