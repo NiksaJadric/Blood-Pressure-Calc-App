@@ -12,7 +12,7 @@ on:
 env:
   app-name: "BPC-Niksa"
   rg-name: "CSD-CA1" 
-  AZURE_WEBAPP_PACKAGE_PATH: '.'
+
 
 
 jobs:
