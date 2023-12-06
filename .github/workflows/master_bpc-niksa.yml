@@ -11,7 +11,8 @@ on:
 
 env:
   app-name: "BPC-Niksa"
-  rg-name: "CSD-CA1"  
+  rg-name: "CSD-CA1" 
+  AZURE_WEBAPP_PACKAGE_PATH: '.'
 
 
 jobs:
@@ -113,14 +114,14 @@ jobs:
           package: .
 
       # Run Selenium tests
-      - name: Run Selenium tests
-        run: dotnet test SeleniumTests\SeleniumTests.csproj
+      - name: Run Selenium tests        
+        run: dotnet test ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/myapp/SeleniumTests.dll /Settings:SeleniumTests.runsettings --logger:"trx;LogFileName=selenium.trx"
   
       # Upload results of selenium tests
-#      - uses: actions/upload-artifact@v3
-#        with:
-#         name: Selenium Tests Results
-#         path: TestResults/selenium.trx
+      - uses: actions/upload-artifact@v3
+        with:
+         name: Selenium Tests Results
+         path: TestResults/selenium.trx
 
 # SWAP SLOTS
     # login to Azure account
