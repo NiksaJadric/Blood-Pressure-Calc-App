@@ -69,18 +69,21 @@ jobs:
         uses: dorny/test-reporter@v1
         with:
          artifact: ''                   # artifact name
-         name: MS Tests                 # Name of the check run which will be created
+         name: Unit Tests Report        # Name of the check run which will be created
          path: '**.trx'                 # Path to test results (inside artifact .zip)
          reporter: 'dotnet-trx'         # Format of test results
 
-  #    - uses: actions/upload-artifact@v3
-  #      with:
-  #       name: my-artifact
-  #       path: path/to/artifact/world.txt 
-
 
       - name: Run acceptance tests
-        run: dotnet test BPCalculatorAcceptanceTest\BPCalculatorAcceptanceTest.csproj --collect "Code Coverage"
+        run: dotnet test BPCalculatorAcceptanceTest\BPCalculatorAcceptanceTest.csproj --collect "Code Coverage" -l:trx
+
+      - name: Publish unit test results
+        uses: dorny/test-reporter@v1
+        with:
+         artifact: ''                                       # artifact name
+         name: BDD / Acceptance Tests Report                # Name of the check run which will be created
+         path: '**.trx'                                     # Path to test results (inside artifact .zip)
+         reporter: 'dotnet-trx'                             # Format of test results
 
       - name: dotnet publish
         run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp

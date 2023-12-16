@@ -33,7 +33,49 @@ namespace BPCalculatorUnitTest
             BloodPressure bp = new BloodPressure() { Systolic = 170, Diastolic = 95 };
             Assert.AreEqual(bp.Category, BPCategory.High);
         }
-        
+
+        [TestMethod]
+        public void TestMethodBorder1a()
+        {
+            BloodPressure bp = new BloodPressure() { Systolic = 89, Diastolic = 59 };
+            Assert.AreEqual(bp.Category, BPCategory.Low);
+        }
+
+        [TestMethod]
+        public void TestMethodBorder1b()
+        {
+            BloodPressure bp = new BloodPressure() { Systolic = 90, Diastolic = 60 };
+            Assert.AreEqual(bp.Category, BPCategory.Ideal);
+        }
+
+        [TestMethod]
+        public void TestMethodBorder2a()
+        {
+            BloodPressure bp = new BloodPressure() { Systolic = 119, Diastolic = 79 };
+            Assert.AreEqual(bp.Category, BPCategory.Ideal);
+        }
+
+        [TestMethod]
+        public void TestMethodBorder2b()
+        {
+            BloodPressure bp = new BloodPressure() { Systolic = 120, Diastolic = 80 };
+            Assert.AreEqual(bp.Category, BPCategory.PreHigh);
+        }
+
+        [TestMethod]
+        public void TestMethodBorder3a()
+        {
+            BloodPressure bp = new BloodPressure() { Systolic = 139, Diastolic = 89 };
+            Assert.AreEqual(bp.Category, BPCategory.PreHigh);
+        }
+
+        [TestMethod]
+        public void TestMethodBorder3b()
+        {
+            BloodPressure bp = new BloodPressure() { Systolic = 140, Diastolic = 90 };
+            Assert.AreEqual(bp.Category, BPCategory.High);
+        }
+
     }
 }
 // end
