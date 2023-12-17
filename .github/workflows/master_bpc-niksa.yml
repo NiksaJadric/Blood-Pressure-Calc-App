@@ -77,7 +77,7 @@ jobs:
       - name: Run acceptance tests
         run: dotnet test BPCalculatorAcceptanceTest\BPCalculatorAcceptanceTest.csproj --collect "Code Coverage" -l:trx
 
-      - name: Publish unit test results
+      - name: Publish BDD test results
         uses: dorny/test-reporter@v1
         with:
          artifact: ''                                       # artifact name
@@ -120,11 +120,20 @@ jobs:
       - name: Run Selenium tests        
         run: dotnet test ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}SeleniumTests.dll --logger:"trx;LogFileName=selenium.trx"
   
-      # Upload results of selenium tests
+      # Upload results of selenium tests as an artefact
       - uses: actions/upload-artifact@v3
         with:
          name: Selenium Tests Results
          path: TestResults/selenium.trx
+
+      # Publish results of selenium tests
+      - name: Publish E2E Selenium test results
+        uses: dorny/test-reporter@v1
+        with:
+         artifact: ''                   # artifact name
+         name: E2E Tests Report         # Name of the check run which will be created
+         path: '**.trx'                 # Path to test results (inside artifact .zip)
+         reporter: 'dotnet-trx'         # Format of test results
 
 # SWAP SLOTS
     # login to Azure account
