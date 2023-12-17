@@ -126,15 +126,6 @@ jobs:
          name: Selenium Tests Results
          path: TestResults/selenium.trx
 
-      # Publish results of selenium tests
-      - name: Publish E2E Selenium test results
-        uses: dorny/test-reporter@v1
-        with:
-         artifact: ''                   # artifact name
-         name: E2E Tests Report         # Name of the check run which will be created
-         path: '**.trx'                 # Path to test results (inside artifact .zip)
-         reporter: 'dotnet-trx'         # Format of test results
-
 # SWAP SLOTS
     # login to Azure account
       - uses: azure/login@v1
